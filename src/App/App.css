@@ -26,8 +26,25 @@
 .doneClass{
   text-decoration: line-through;
 }
+.list-group-item {
+  border-color: black;
+}
+
+.input-group-append {
+  margin: 0;
+  padding: 0;
+}
+
+.classUlLi {
+  max-height: 200px;
+  overflow: auto;
+}
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.Red {
+  border: 1px solid red;
 }

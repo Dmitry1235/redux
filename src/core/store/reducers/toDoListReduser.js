@@ -1,5 +1,8 @@
 export default (state = {
-  todoList: [{id: 0, text: 'test', isDone: true}, {id: 1, text: 'test2', isDone: false}], filter: "all"}, action) => {
+  todoList: [{id: 0, text: 'test', isDone: true}],
+  filter: "all",
+  Users: [{id:0, firstName: 'admin', lastName: 'admin', numberPhone: '89880000000'}]}, action) => {
+
   switch (action.type) {
     case 'ADD_NEV_COMPONENT':
       return {
