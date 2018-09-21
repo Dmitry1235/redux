@@ -1,7 +1,4 @@
-export default (state = {
-  todoList: [{id: 0, text: 'test', isDone: true}],
-  filter: "all",
-  Users: [{id:0, firstName: 'admin', lastName: 'admin', numberPhone: '89880000000'}]}, action) => {
+export default (state = {todoList: [{id: 0, text: 'test', isDone: true}], filter: "all"}, action) => {
 
   switch (action.type) {
     case 'ADD_NEV_COMPONENT':
@@ -26,6 +23,15 @@ export default (state = {
       return {
         ...state,
         filter: action.payload
+      };
+      case 'ADD_NEW_USER':
+      return {
+        ...state,
+      };
+    case 'ENTRY_TO_SITE':
+      return {
+        ...state,
+        users: [...state.users]
       };
     default:
       return state
