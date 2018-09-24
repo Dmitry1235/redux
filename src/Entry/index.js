@@ -1,36 +1,39 @@
 import React, {Component} from "react";
-import connect from "react-redux/es/connect/connect";
-import { withRouter } from 'react-router';
+import './style.css'
+import {connect} from 'react-redux';
+import {sha256} from 'js-sha256';
+import {addNewUser} from '../core/store/actions/actionsUserList';
+import FormLabel from '../components/Form_label';
+import Button from '../components/Button';
 
 class Entry extends Component {
   constructor() {
     super();
-    this.state={
-      numberPhone:{
+    this.state = {
+      numberPhone: {
         value: "",
         error: false
       },
-      password:{
+      password: {
         value: "",
         error: false
       }
     }
-}
+  }
 
   handleChangeInput(value, fieldName) {
     value ? this.setState({[fieldName]: {value, error: false}}) : this.setState({[fieldName]: {value, error: true}});
   }
-  
-  entryUser(){
-    for(const key in this.props.users){
-      if(this.props.users[key].numberPhone === this.state.numberPhone.value && this.props.users[key].password === this.state.password.value){
+
+  entryUser(numberPhone, password) {
+    const arrayStorage = JSON.parse(localStorage.getItem('user'));
+    for (const num in arrayStorage) {
+      if (arrayStorage[num].phoneNumber.value === numberPhone && arrayStorage[num].password.value === sha256(password)) {
         this.props.history.push('/home');
-        break;
-      }else{
-        this.setState({numberPhone:{value:"", error:true}});
-        this.setState({password:{value:"", error:true}});
+        return this.props.entryUser(arrayStorage[num].firstName.value);
       }
     }
+    return this.setState({numberPhone: {value: '', error: true}, password: {value: '', error: true}});
   }
 
   render() {
@@ -41,20 +44,14 @@ class Entry extends Component {
           <div className='col-4'></div>
           <div className='Entry col-4'>
             <label>Entry</label>
-            <div>
-              <label>Number phone</label>
-              <div>
-                <input type='text' className={`${numberPhone.error === true ? 'Red' : ''}`} value={numberPhone.value} onChange={(e) => this.handleChangeInput(e.target.value, 'numberPhone')}/>
-              </div>
-            </div>
-            <div>
-              <label>Password</label>
-              <div>
-                <input type='text' className={`${password.error === true ? 'Red' : ''}`} value={password.value} onChange={(e) => this.handleChangeInput(e.target.value, 'password')}/>
-              </div>
-            </div>
-            <button onClick={() => this.entryUser()}>Enter</button>
-            <button onClick={() => this.props.history.push('/registration')}>Registration</button>
+            <FormLabel labelText={'Number phone'} inputType={'text'}
+                         inputClass={`${numberPhone.error === true ? 'Red form-control' : 'form-control'}`} inputValue={numberPhone.value}
+                          inputOnChange={(e) => this.handleChangeInput(e.target.value, 'numberPhone')}/>
+            <FormLabel labelText={'Password'} inputType={'text'}
+                         inputClass={`${password.error === true ? 'Red form-control' : 'form-control'}`} inputValue={password.value}
+                          inputOnChange={(e) => this.handleChangeInput(e.target.value, 'password')}/><hr/>
+            <Button className={'btn btn-outline-secondary col-6'} click={() => this.entryUser(numberPhone.value, password.value)} text={'Enter'}/>
+            <Button className={'btn btn-outline-secondary col-6'} click={() => this.props.history.push('/registration')} text={'Registration'}/>
           </div>
           <div className='col-4'></div>
         </div>
@@ -64,8 +61,10 @@ class Entry extends Component {
 }
 
 const mapStateToProps = state => ({
-  users: state.toDoListReduser.users,
-
 });
 
-export default connect(mapStateToProps, withRouter)(Entry);
+const mapDispatchToProps = dispatch => ({
+  entryUser: (text) => dispatch(addNewUser(text))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Entry);

@@ -3,13 +3,10 @@ export default (state = {user: null, isLogin: false}, action) => {
     case "SUCCESS_LOGIN":
       return{
         ...state,
-        user: [...state.user, {
-          lastName: action.lastName.value,
-          firstName: action.firstName.value,
-          numberPhone: action.numberPhone.value,
-          password: action.password.value
-        }]
+        user: action.payload,
+        isLogin: true
       };
+    default:
+      return state
   }
-  return state
 }

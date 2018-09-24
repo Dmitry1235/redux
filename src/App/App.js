@@ -32,6 +32,8 @@ class App extends Component {
     const {inputValue} = this.state;
     const viewTodoList = todoList.filter(todoList => filter === 'all' || (filter === 'done') === todoList.isDone);
 
+    console.log('..............', this.props);
+
     return (
       <div className='container'>
         <div className='row'>
@@ -71,7 +73,10 @@ class App extends Component {
 
 const mapStateToProps = state => ({
   todoList: state.toDoListReduser.todoList,
-  filter: state.toDoListReduser.filter
+  filter: state.toDoListReduser.filter,
+
+  user: state.userListReduser.user,
+  isLogin: state.userListReduser.isLogin
 });
 
 const mapDispatchToProps = dispatch => ({
