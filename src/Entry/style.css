@@ -5,3 +5,10 @@
 label {
     margin-top:10px;
 }
+.form-control:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: gray;
+    outline: 0;
+    box-shadow: 0 0 0 0rem gray;
+}

@@ -1,9 +1,9 @@
-import React, {Component} from "react";
-import './styles.css';
-import {withRouter} from 'react-router';
-import {sha256} from 'js-sha256';
-import FormLabel from '../components/Form_label';
+import React, { Component } from 'react';
+import { sha256 } from 'js-sha256';
+import FormLabel from '../components/FormLabel';
 import Button from '../components/Button';
+
+import './styles.css';
 
 class Registration extends Component {
   constructor() {
@@ -11,135 +11,146 @@ class Registration extends Component {
     this.state = {
       lastName: {
         value: '',
-        error: false
+        error: false,
       },
       firstName: {
         value: '',
-        error: false
+        error: false,
       },
       phoneNumber: {
         value: '',
-        error: false
+        error: false,
       },
       password: {
         value: '',
-        error: false
+        error: false,
       },
       confirmPassword: {
         value: '',
-        error: false
-      }
+        error: false,
+      },
+    };
+  }
+
+  checkValidation() {
+    const newState = { ...this.state };
+    let result = true;
+    if (!newState.lastName.value || newState.lastName.value.trim().length < 3 || !newState.lastName.value.trim().match(/^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/)) {
+      newState.lastName.error = true;
+      result = false;
     }
+    if (!newState.firstName.value || newState.firstName.value.trim().length < 3 || !newState.firstName.value.trim().match(/^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/)) {
+      newState.firstName.error = true;
+      result = false;
+    }
+    if (!newState.phoneNumber.value || newState.phoneNumber.value.trim().length < 5 || !newState.phoneNumber.value.trim().match(/\d{1,}/g) || !this.validTolocalNumberPhone(newState.phoneNumber.value.trim())) {
+      newState.phoneNumber.error = true;
+      result = false;
+    }
+    if (!newState.password.value || newState.password.value.trim().length < 3 || newState.password.value.trim() !== newState.confirmPassword.value.trim()) {
+      newState.password.error = true;
+      result = false;
+    }
+    if (!newState.confirmPassword.value || newState.confirmPassword.value.trim().length < 3 || newState.confirmPassword.value.trim() !== newState.password.value.trim()) {
+      newState.confirmPassword.error = true;
+      result = false;
+    }
+
+    this.setState(newState);
+    return result ? this.addToLocalStorige() : alert('Error!!!!');
   }
 
-  handleChangeInput(value, fieldName, regext) {
-    value.match(regext) !== null ? this.setState({
-      [fieldName]: {
-        value,
-        error: false
-      }
-    }) : this.setState({[fieldName]: {value, error: true}});
-  }
-
-  handlerChangeNumberPhone(value, fieldName, regext) {
-    value.match(regext) !== null && this.validTolocalNumberPhone(value) ? this.setState({
-      [fieldName]: {
-        value,
-        error: false
-      }
-    }) : this.setState({[fieldName]: {value, error: true}});
+  handleChangeInput(value, fieldName) {
+    this.setState({ [fieldName]: { value, error: false } });
   }
 
   validTolocalNumberPhone(value) {
-    const storigeNumber = JSON.parse(localStorage.getItem('user'))
-    for (let num in storigeNumber) {
-      if (storigeNumber[num].phoneNumber.value === value) {
-        return false;
-      }
+    if (localStorage.getItem('user') !== null) {
+      const storageArray = JSON.parse(localStorage.getItem('user'));
+      return !storageArray.find(item => item.phoneNumber === value);
     }
-    return true;
-  }
-
-  validConfirmPassword(value) {
-    value === this.state.password.value ?
-      this.setState({
-        password: {value: this.state.password.value, error: false},
-        confirmPassword: {value, error: false}
-      }) :
-      this.setState({
-        password: {value: this.state.password.value, error: true},
-        confirmPassword: {value, error: true}
-      });
-  }
-
-  validPassword(value) {
-    value === this.state.confirmPassword.value ?
-      this.setState({
-        password: {value, error: false},
-        confirmPassword: {value: this.state.confirmPassword.value, error: false}
-      }) :
-      this.setState({
-        password: {value, error: true},
-        confirmPassword: {value: this.state.confirmPassword.value, error: true}
-      });
+    this.addToLocalStorige();
   }
 
   addToLocalStorige() {
-    const arrayState = this.state;
-    arrayState.password.value = sha256(arrayState.password.value);
-    arrayState.confirmPassword.value = sha256(arrayState.confirmPassword.value);
+    const objectLocalStorage = {
+      lastName: this.state.lastName.value,
+      firstName: this.state.firstName.value,
+      phoneNumber: this.state.phoneNumber.value,
+      password: this.state.password.value,
+    };
+
+    objectLocalStorage.password = sha256(objectLocalStorage.password);
     alert('Are you registered ');
 
     if (localStorage.length === 0) {
-      localStorage.setItem('user', '[' + JSON.stringify(arrayState) + ']');
+      localStorage.setItem('user', JSON.stringify([objectLocalStorage]));
     } else {
-      const storige = localStorage.getItem('user');
-      localStorage.setItem('user', (JSON.stringify(JSON.parse(storige).concat(arrayState))));
+      const storage = localStorage.getItem('user');
+      localStorage.setItem('user', (JSON.stringify([...JSON.parse(storage), objectLocalStorage])));
     }
+
     this.props.history.push('/entry');
   }
 
-  result() {
-    let flag = true;
-    for (const key in this.state) {
-      flag = flag && (this.state[key].error === false && this.state[key].value !== "");
-    }
-    return flag ? this.addToLocalStorige() : alert("Error!!!!");
-  }
-
   render() {
-    const {lastName, firstName, phoneNumber, password, confirmPassword} = this.state;
+    const {
+      lastName, firstName, phoneNumber, password, confirmPassword,
+    } = this.state;
     return (
-      <div className='container'>
-        <div className='row'>
-          <div className="col-4"></div>
-          <div className='Registration col-4'>
-            <label>Registration</label>
-            <FormLabel labelText={'First name'} inputType={'text'}
-                       inputClass={`${firstName.error === true ? 'Red form-control' : 'form-control'}`} inputValue={firstName.value}
-                       inputOnChange={(e) => this.handleChangeInput(e.target.value, 'firstName', /^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/)}/>
+      <div className="container">
+        <div className="row">
+          <div className="col-4" />
+          <div className="Registration col-4">
+            <label>Create an account</label>
+            <FormLabel
+              labelText="First name"
+              inputType="text"
+              inputClass={`${firstName.error === true ? 'Red form-control' : 'form-control'}`}
+              inputValue={firstName.value}
+              inputOnChange={e => this.handleChangeInput(e.target.value, 'firstName', /^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/)}
+            />
 
-            <FormLabel labelText={'Last name'} inputType={'text'} inputClass={`${lastName.error === true ? 'Red form-control' : 'form-control'}`}
-                       inputValue={lastName.value}
-                       inputOnChange={(e) => this.handleChangeInput(e.target.value, 'lastName', /^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/)}/>
+            <FormLabel
+              labelText="Last name"
+              inputType="text"
+              inputClass={`${lastName.error === true ? 'Red form-control' : 'form-control'}`}
+              inputValue={lastName.value}
+              inputOnChange={e => this.handleChangeInput(e.target.value, 'lastName', /^[a-zA-Z'][a-zA-Z-' ]+[a-zA-Z']?$/)}
+            />
 
-            <FormLabel labelText={'Number phone'} inputType={'text'}
-                       inputClass={`${phoneNumber.error === true ? 'Red form-control' : 'form-control'}`} inputValue={phoneNumber.value}
-                       inputOnChange={(e) => this.handlerChangeNumberPhone(e.target.value, 'phoneNumber', /\d{1,}/g)}/>
+            <FormLabel
+              labelText="Number phone"
+              inputType="text"
+              inputClass={`${phoneNumber.error === true ? 'Red form-control' : 'form-control'}`}
+              inputValue={phoneNumber.value}
+              inputOnChange={e => this.handleChangeInput(e.target.value, 'phoneNumber', /\d{1,}/g)}
+            />
 
-            <FormLabel labelText={'Enter password'} inputType={'password'}
-                       inputClass={`${this.state.password.error === true ? 'Red form-control' : 'form-control'}`} inputValue={password.value}
-                       inputOnChange={(e) => this.validPassword(e.target.value)}/>
+            <FormLabel
+              labelText="Enter password"
+              inputType="password"
+              inputClass={`${this.state.password.error === true ? 'Red form-control' : 'form-control'}`}
+              inputValue={password.value}
+              inputOnChange={e => this.handleChangeInput(e.target.value, 'password')}
+            />
 
-            <FormLabel labelText={'Confirm password'} inputType={'password'}
-                       inputClass={`${this.state.confirmPassword.error === true ? 'Red form-control' : 'form-control'}`}
-                       inputValue={confirmPassword.value}
-                       inputOnChange={(e) => this.validConfirmPassword(e.target.value)}/><hr/>
-
-            <Button className={'btn btn-outline-secondary col-6'} click={() => this.result()} text={'Input'}/>
-            <Button className={'btn btn-outline-secondary col-6'} click={() => this.props.history.push('/entry')} text={'Cancel'}/>
+            <FormLabel
+              labelText="Confirm password"
+              inputType="password"
+              inputClass={`${this.state.confirmPassword.error === true ? 'Red form-control' : 'form-control'}`}
+              inputValue={confirmPassword.value}
+              inputOnChange={e => this.handleChangeInput(e.target.value, 'confirmPassword')}
+            />
+            <hr />
+            <Button
+              className="btn btn-secondary col-6"
+              click={() => this.props.history.push('/entry')}
+              text="Cancel"
+            />
+            <Button className="btn btn-primary  col-6" click={() => this.checkValidation()} text="Sign Up" />
           </div>
-          <div className='col4'></div>
+          <div className="col4" />
         </div>
       </div>
     );
