@@ -34,17 +34,16 @@ class Entry extends Component {
         return this.props.entryUser(arrayStorage[num].firstName);
       }
     }
-    return this.setState({ numberPhone: { value: '', error: true }, password: { value: '', error: true } });
+    return this.setState({ numberPhone: { value: this.state.numberPhone.value, error: true }, password: { value: '', error: true } });
   }
 
   render() {
     const { numberPhone, password } = this.state;
     return (
       <div className="container">
-        <div className="row">
-          <div className="col-4" />
+        <div className="row justify-content-center">
           <div className="Entry col-4">
-            <label> Please Sign In</label>
+            <h3> Please Sign In</h3>
             <FormLabel
               labelText="Number phone"
               inputType="text"
@@ -71,7 +70,6 @@ class Entry extends Component {
               text="Log In"
             />
           </div>
-          <div className="col-4" />
         </div>
       </div>
     );

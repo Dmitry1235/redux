@@ -28,17 +28,21 @@ class App extends Component {
   }
 
   render() {
-    const { todoList, filter, clickElementLi, change } = this.props;
+    const {
+      todoList, filter, clickElementLi, change,
+    } = this.props;
     const { inputValue } = this.state;
     const viewTodoList = todoList.filter(todoList => filter === 'all' || (filter === 'done') === todoList.isDone);
 
     console.log('..............', this.props);
 
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-4" />
-          <div className="col-4 App">
+      <div className="container-flued">
+        <div className="row justify-content-end">
+          <Button className="col-1 btn btn-outline-secondary btn-exit" text="Exit" click={() => this.props.history.push('/entry')}/>
+        </div>
+        <div className="row justify-content-center">
+          <div className="col-3 App">
             <div className="input-group">
               <input
                 className="col-9"
@@ -55,26 +59,16 @@ class App extends Component {
                 />
               </div>
             </div>
-            <br />
+            <br/>
             <div className="classUlLi">
-              <ul className="list-group">{viewTodoList.map(item => <Li className={item.isDone} key={item.id} click={() => clickElementLi(item.id)} text={item.text} />)}</ul>
+              <ul className="list-group">{viewTodoList.map(item => <Li className={item.isDone} key={item.id} click={() => clickElementLi(item.id)} text={item.text}/>)}</ul>
             </div>
-            <hr />
+            <hr/>
             <div className="btn-group btn-block">
-              <Button className="btn btn-outline-secondary col" text="View all" click={() => change('all')} />
-              <Button className="btn btn-outline-secondary col" text="View done" click={() => change('done')} />
-              <Button
-                className="btn btn-outline-secondary col"
-                text="View not done"
-                click={() => change('not done')}
-              />
+              <Button className="btn btn-outline-secondary col" text="View all" click={() => change('all')}/>
+              <Button className="btn btn-outline-secondary col" text="View done" click={() => change('done')}/>
+              <Button className="btn btn-outline-secondary col" text="View not done" click={() => change('not done')}/>
             </div>
-          </div>
-          <div className="col-4 ">
-            <span className="row">
-              <span className="col-8" />
-              <Button className="btn btn-outline-secondary col " text="Exit" click={() => this.props.history.push('/entry')} />
-            </span>
           </div>
         </div>
       </div>
