@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { sha256 } from 'js-sha256';
 import FormLabel from '../components/FormLabel';
 import Button from '../components/Button';
-import {addUser, addUserAsync} from '../core/api/index';
+import { addUserAsync } from '../core/api/index';
 
 import './styles.css';
 
@@ -12,23 +12,23 @@ class Registration extends Component {
     super();
     this.state = {
       lastName: {
-        value: 'qweqwe',
+        value: '',
         error: false,
       },
       firstName: {
-        value: 'qweqwe',
+        value: '',
         error: false,
       },
       phoneNumber: {
-        value: '12345',
+        value: '',
         error: false,
       },
       password: {
-        value: 'qweqwe',
+        value: '',
         error: false,
       },
       confirmPassword: {
-        value: 'qweqwe',
+        value: '',
         error: false,
       },
     };
@@ -62,7 +62,6 @@ class Registration extends Component {
       newState.confirmPassword.error = true;
       result = false;
     }
-
     this.setState(newState);
     if (result) {
       return this.addToLocalStorige();
@@ -78,44 +77,24 @@ class Registration extends Component {
       lastName: this.state.lastName.value,
       firstName: this.state.firstName.value,
       phoneNumber: this.state.phoneNumber.value,
-      password: this.state.password.value,
+      password: sha256(this.state.password.value),
     };
-
-    objectLocalStorage.password = sha256(objectLocalStorage.password);
 
     addUserAsync(objectLocalStorage)
       .then((data) => {
         console.log(data)
+        if (data.ok) {
+          alert('Are you registered ');
+          this.props.history.push('/entry');
+        } else {
+          console.log('......data.ok........', data.ok);
+          this.setState({phoneNumber: {value:'', error: true}});
+        }
       })
-
-    /*
-    addUserCallback(objectLocalStorage, () => {
-      console.log('ssssssssssssssssss')
-    }, () => {
-      console.log('eeeeeeerrrrroooot')
-    });
-    */
-
-    // addUser(objectLocalStorage, (data) => {
-    //   console.log(12345, data);
-    // })
-    //   .catch((e) => {
-    //     console.log('..............e',e )
-    //   })
-
-
-
-    // if (!mongoDB.addUser(objectLocalStorage)) {
-    //   this.setState({numberPhone: {value: objectLocalStorage.phoneNumber, error: true}});
-    // } else {
-    //   alert('Are you registered ');
-    //   this.props.history.push('/entry');
-    // }
   }
 
   render() {
     const { lastName, firstName, phoneNumber, password, confirmPassword } = this.state;
-    console.log('......State)........', this.state);
     return (
       <div className="container">
         <div className="row justify-content-center">
@@ -144,7 +123,7 @@ class Registration extends Component {
               inputValue={phoneNumber.value}
               inputOnChange={e => this.handleChangeInput(e.target.value, 'phoneNumber', /\d{1,}/g)}
             />
-
+            {phoneNumber.error && <small>A user with this number already exists</small>}
             <FormLabel
               labelText="Enter password"
               inputType="password"
@@ -181,23 +160,18 @@ export default Registration;
 
 
 
-
-
-
 /*
-      .then((resp) => resp.json())
-     .then((resp) => {
-       if (resp.ok) {
-         return resp;
-       } else {
-         console.log('..............', resp)
-         throw new Error(resp.errmsg);
-       }
+addUserCallback(objectLocalStorage, () => {
+  console.log('ssssssssssssssssss')
+}, () => {
+  console.log('eeeeeeerrrrroooot')
+});
+*/
+
+/*   addUser(objectLocalStorage)
+     .then((res) => {
+       console.log('......res......', res);
      })
-     .then((data) => {
-       console.log('..............', data)
-     })
-     .catch((error) => {
-       console.log('catch', [error]);
-     });
-     */
+     .catch((e) => {
+       console.log('..............e',e )
+     })*/

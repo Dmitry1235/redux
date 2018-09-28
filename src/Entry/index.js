@@ -4,7 +4,7 @@ import { sha256 } from 'js-sha256';
 import { addNewUser } from '../core/store/actions/actionsUserList';
 import FormLabel from '../components/FormLabel';
 import Button from '../components/Button';
-
+import { login } from '../core/api/index'
 import './style.css';
 
 class Entry extends Component {
@@ -12,29 +12,38 @@ class Entry extends Component {
     super();
     this.state = {
       numberPhone: {
-        value: '',
+        value: '12345',
         error: false,
       },
       password: {
-        value: '',
+        value: '123',
         error: false,
       },
     };
   }
 
   handleChangeInput(value, fieldName) {
-    value ? this.setState({ [fieldName]: { value, error: false } }) : this.setState({ [fieldName]: { value, error: true } });
+    value ? this.setState({[fieldName]: {value, error: false}}) : this.setState({[fieldName]: {value, error: true}});
   }
 
   entryUser(numberPhone, password) {
-    const arrayStorage = JSON.parse(localStorage.getItem('user'));
-    for (const num in arrayStorage) {
-      if (arrayStorage[num].phoneNumber === numberPhone && arrayStorage[num].password === sha256(password)) {
-        this.props.history.push('/home');
-        return this.props.entryUser(arrayStorage[num].firstName);
-      }
-    }
-    return this.setState({ numberPhone: { value: this.state.numberPhone.value, error: true }, password: { value: '', error: true } });
+    const objectUser = {
+      phoneNumber: numberPhone,
+      password: sha256(password),
+    };
+
+    login(objectUser)
+      .then((data) => {
+        if (data.length !== 0) {
+          this.props.entryUser(data[0].phoneNumber);
+          this.props.history.push('/home');
+        } else {
+          return this.setState({
+            numberPhone: {value: this.state.numberPhone.value, error: true},
+            password: {value: '', error: true}
+          });
+        }
+      });
   }
 
   render() {
@@ -47,7 +56,7 @@ class Entry extends Component {
             <FormLabel
               labelText="Number phone"
               inputType="text"
-              inputClass={`${numberPhone.error === true ? 'Red form-control' : 'form-control'}`}
+              inputClass='form-control'
               inputValue={numberPhone.value}
               inputOnChange={e => this.handleChangeInput(e.target.value, 'numberPhone')}
             />
@@ -58,6 +67,7 @@ class Entry extends Component {
               inputValue={password.value}
               inputOnChange={e => this.handleChangeInput(e.target.value, 'password')}
             />
+            <small>{ password.error ? "Invalid number or password" : "" }</small>
             <hr />
             <Button
               className="btn btn-success col-6"

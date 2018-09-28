@@ -12,3 +12,6 @@ label {
     outline: 0;
     box-shadow: 0 0 0 0rem gray;
 }
+small{
+    color: red;
+}

@@ -19,3 +19,10 @@ export const changeFilter = (payload) => dispatch => {
     type: 'CHANGE_FILTER'
   });
 };
+
+export const arrayList = (payload) => dispatch => {
+  dispatch({
+    payload,
+    type: 'ARRAY_LIST'
+  });
+};

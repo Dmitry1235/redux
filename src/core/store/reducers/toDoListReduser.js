@@ -1,4 +1,6 @@
-export default (state = {todoList: [{id: 0, text: 'test', isDone: true}], filter: "all"}, action) => {
+import {arrayList} from "../actions/actionsDoList";
+
+export default (state = {todoList: [{id: 0, text: 'test', isDone: true}], arrayList:[], filter: "all"}, action) => {
 
   switch (action.type) {
     case 'ADD_NEV_COMPONENT':
@@ -32,6 +34,11 @@ export default (state = {todoList: [{id: 0, text: 'test', isDone: true}], filter
       return {
         ...state,
         users: [...state.users]
+      };
+    case 'ARRAY_LIST':
+      return{
+        ...state,
+        arrayList: [...state.arrayList, action.payload]
       };
     default:
       return state
