@@ -7,7 +7,7 @@ export default function configureStore() {
     rootReducer,
     {},
     applyMiddleware(
-      thunk
-    )
+      thunk,
+    ),
   );
 }

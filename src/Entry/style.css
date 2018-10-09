@@ -1,9 +1,12 @@
 .Entry {
     text-align: center;
-    margin-top: 300px;
-}
+    margin: 18vh auto auto auto;
+    }
 label {
     margin-top:10px;
+}
+.container-flued, .row {
+    height: 100%;
 }
 .form-control:focus {
     color: #495057;

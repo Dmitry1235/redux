@@ -1,29 +1,36 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { sha256 } from 'js-sha256';
-import { addNewUser } from '../core/store/actions/actionsUserList';
+import connect from 'react-redux/es/connect/connect';
 import FormLabel from '../components/FormLabel';
-import Button from '../components/Button';
-import { login } from '../core/api/index'
+import Button from '../components/Button/index';
+import { login } from '../core/api/index';
+import { changeFilter } from '../core/store/actions/actionsDoList';
 import './style.css';
+
 
 class Entry extends Component {
   constructor() {
     super();
     this.state = {
       numberPhone: {
-        value: '12345',
+        value: '',
         error: false,
       },
       password: {
-        value: '123',
+        value: '',
         error: false,
       },
     };
   }
 
+  componentDidMount() {
+    if(this.props.User.phoneNumber && this.props.history.location.pathname !== '/'){
+      this.props.history.push('/');
+    }
+  }
+
   handleChangeInput(value, fieldName) {
-    value ? this.setState({[fieldName]: {value, error: false}}) : this.setState({[fieldName]: {value, error: true}});
+    value ? this.setState({ [fieldName]: { value, error: false } }) : this.setState({ [fieldName]: { value, error: true } });
   }
 
   entryUser(numberPhone, password) {
@@ -34,13 +41,17 @@ class Entry extends Component {
 
     login(objectUser)
       .then((data) => {
-        if (data.length !== 0) {
-          this.props.entryUser(data[0].phoneNumber);
-          this.props.history.push('/home');
+        if (data.data.length !== 0) {
+          sessionStorage.setItem('User', JSON.stringify({
+            phoneNumber: data.data[0].phoneNumber,
+            token: data.token,
+            User: data,
+          }));
+          this.props.history.push('/');
         } else {
           return this.setState({
-            numberPhone: {value: this.state.numberPhone.value, error: true},
-            password: {value: '', error: true}
+            numberPhone: { value: this.state.numberPhone.value, error: true },
+            password: { value: '', error: true },
           });
         }
       });
@@ -48,15 +59,16 @@ class Entry extends Component {
 
   render() {
     const { numberPhone, password } = this.state;
+
     return (
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="Entry col-4">
+      <div className="container-flued">
+        <div className="row ">
+          <div className="Entry col-9 col-xl-3 col-lg-4 col-md-5 col-sm-6 align-items-center">
             <h3> Please Sign In</h3>
             <FormLabel
               labelText="Number phone"
               inputType="text"
-              inputClass='form-control'
+              inputClass="form-control"
               inputValue={numberPhone.value}
               inputOnChange={e => this.handleChangeInput(e.target.value, 'numberPhone')}
             />
@@ -67,15 +79,10 @@ class Entry extends Component {
               inputValue={password.value}
               inputOnChange={e => this.handleChangeInput(e.target.value, 'password')}
             />
-            <small>{ password.error ? "Invalid number or password" : "" }</small>
+            <small>{password.error ? 'Invalid number or password' : ''}</small>
             <hr />
             <Button
-              className="btn btn-success col-6"
-              click={() => this.props.history.push('/registration')}
-              text="Registration"
-            />
-            <Button
-              className="btn btn-primary col-6"
+              className="btn btn-primary col-12"
               click={() => this.entryUser(numberPhone.value, password.value)}
               text="Log In"
             />
@@ -86,10 +93,11 @@ class Entry extends Component {
   }
 }
 
-const mapStateToProps = state => ({});
-
+const mapStateToProps = state => ({
+  User: state.toDoListReduser.User,
+});
 const mapDispatchToProps = dispatch => ({
-  entryUser: text => dispatch(addNewUser(text)),
+  remove: () => dispatch(changeFilter()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Entry);

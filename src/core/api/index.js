@@ -1,4 +1,4 @@
-/*const addUser = (objectUser) => {
+/* const addUser = (objectUser) => {
   return fetch('http://localhost:3001/registration', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -26,22 +26,22 @@ const addUserCallback = (objectUser, scb, ecb) => {
         ecb && ecb(resp.json().errmsg)
       }
     })
-};*/
+}; */
 
 async function addUserAsync(objectUser) {
   const result = await fetch('http://localhost:3001/registration', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(objectUser),
-  })
+  });
 
   return result;
-};
+}
 
 async function login(objectUser) {
   const result = await fetch('http://localhost:3001/entry', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(objectUser),
   });
 
@@ -49,23 +49,44 @@ async function login(objectUser) {
 }
 
 
-async function addItemList(objectList) {
-  const result = await fetch('http://localhost:3001/addNewItem', {
+async function addItemList(objectList, authorization) {
+  await fetch('http://localhost:3001/addNewItem', {
     method: 'POST',
-    headers: {'Content-Type' : 'application/json'},
+    headers: {
+      Authorization: `JWT ${authorization}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(objectList),
   });
 
-  return result.json();
+  return objectList;
 }
 
-async function findNumberPhoneList(number) {
+async function findNumberPhoneList(number, authorization) {
   const result = await fetch('http://localhost:3001/findList', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+      Authorization: `JWT ${authorization}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(number),
   });
 
   return result.json();
 }
-export { addUserAsync, login, addItemList, findNumberPhoneList };
+
+async function updateItemIsDone(object, authorization) {
+  const result = await fetch('http://localhost:3001/updateItem', {
+    method: 'POST',
+    headers: {
+      Authorization: `JWT ${authorization}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(object),
+  });
+
+  return result.json();
+}
+export {
+  addUserAsync, login, addItemList, findNumberPhoneList, updateItemIsDone,
+};

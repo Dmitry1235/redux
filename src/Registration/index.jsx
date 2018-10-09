@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { sha256 } from 'js-sha256';
+import connect from 'react-redux/es/connect/connect';
 import FormLabel from '../components/FormLabel';
-import Button from '../components/Button';
+import Button from '../components/Button/index';
 import { addUserAsync } from '../core/api/index';
+import { changeFilter } from '../core/store/actions/actionsDoList';
 
 import './styles.css';
-
 
 class Registration extends Component {
   constructor() {
@@ -32,6 +33,12 @@ class Registration extends Component {
         error: false,
       },
     };
+  }
+
+  componentDidMount() {
+    if(this.props.User.phoneNumber && this.props.history.location.pathname !== '/'){
+      this.props.history.push('/');
+    }
   }
 
   checkValidation() {
@@ -82,23 +89,24 @@ class Registration extends Component {
 
     addUserAsync(objectLocalStorage)
       .then((data) => {
-        console.log(data)
         if (data.ok) {
           alert('Are you registered ');
           this.props.history.push('/entry');
         } else {
-          console.log('......data.ok........', data.ok);
-          this.setState({phoneNumber: {value:'', error: true}});
+          this.setState({ phoneNumber: { value: '', error: true } });
         }
-      })
+      });
   }
 
   render() {
-    const { lastName, firstName, phoneNumber, password, confirmPassword } = this.state;
+    const {
+      lastName, firstName, phoneNumber, password, confirmPassword,
+    } = this.state;
+
     return (
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="Registration col-4">
+      <div className="container-flued">
+        <div className="row ">
+          <div className="Registration col-9 col-xl-3 col-lg-4 col-md-5 col-sm-6">
             <h3>Create an account</h3>
             <FormLabel
               labelText="First name"
@@ -140,12 +148,7 @@ class Registration extends Component {
               inputOnChange={e => this.handleChangeInput(e.target.value, 'confirmPassword')}
             />
             <hr />
-            <Button
-              className="btn btn-secondary col-6"
-              click={() => this.props.history.push('/entry')}
-              text="Cancel"
-            />
-            <Button className="btn btn-primary  col-6" click={() => this.checkValidation()} text="Sign Up" />
+            <Button className="btn btn-primary  col-12" click={() => this.checkValidation()} text="Sign Up" />
           </div>
         </div>
       </div>
@@ -153,25 +156,12 @@ class Registration extends Component {
   }
 }
 
-export default Registration;
-
-
-
-
-
-
-/*
-addUserCallback(objectLocalStorage, () => {
-  console.log('ssssssssssssssssss')
-}, () => {
-  console.log('eeeeeeerrrrroooot')
+const mapStateToProps = state => ({
+  User: state.toDoListReduser.User,
 });
-*/
 
-/*   addUser(objectLocalStorage)
-     .then((res) => {
-       console.log('......res......', res);
-     })
-     .catch((e) => {
-       console.log('..............e',e )
-     })*/
+const mapDispatchToProps = dispatch => ({
+  remove: () => dispatch(changeFilter()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Registration);

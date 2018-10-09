@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 
 class FormLabel extends Component{
-  render(){
-    const {labelText, inputType, inputClass, inputValue, inputOnChange} = this.props;
+  render() {
+    const { labelText, inputType, inputClass, inputValue, inputOnChange } = this.props;
     return (
       <div>
         <label>{labelText}</label>

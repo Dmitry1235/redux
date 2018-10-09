@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  margin-top: 300px;
+  margin: 18vh auto auto auto;
 }
 
 .App-logo {
@@ -36,7 +36,7 @@
 }
 
 .classUlLi {
-  max-height: 200px;
+  max-height: 246px;
   overflow: auto;
 }
 
@@ -57,4 +57,12 @@
 }
 .btn-exit{
   margin-right: 20px;
+}
+
+.list-group-item.doneClass:hover {
+  text-decoration: line-through !important;
+}
+
+.list-group-item.notDone:hover {
+  text-decoration: none !important;
 }
